@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+
+  <title>Admin - Login</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet" />
+
+  <!-- Custom styles for this template-->
+  <link href="/css/sb-admin-2.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-gradient-primary">
+  <script>
+    const isauth = localStorage.getItem("token");
+    if (isauth) {
+      window.location.href = "/admin";
+    }
+  </script>
+
+  <div class="container">
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-lg-12 col-md-9">
+        <div class="card o-hidden border-0 shadow-lg my-5">
+          <div class="card-body p-0">
+            <!-- Nested Row within Card Body -->
+            <div class="row">
+              <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+              <div class="col-lg-6">
+                <div class="p-5">
+                  <div class="text-center">
+                    <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                  </div>
+                  <h6 class="text-danger" id="messagetag"></h6>
+                  <form method="post">
+                    <div class="form-group">
+                      <input type="email" class="form-control form-control-user" id="exampleInputEmail"
+                        aria-describedby="emailHelp" name="email" placeholder="Enter Email Address..." />
+                      <p class="text-danger" id="email"></p>
+                    </div>
+                    <div class="form-group">
+                      <input type="password" class="form-control form-control-user" name="password"
+                        id="exampleInputPassword" placeholder="Password" />
+                      <p class="text-danger" id="pass"></p>
+                    </div>
+                    <!-- <div class="form-group">
+                        <div class="custom-control custom-checkbox small">
+                          <input
+                            type="checkbox"
+                            class="custom-control-input"
+                            id="customCheck"
+                          />
+                          <label class="custom-control-label" for="customCheck"
+                            >Remember Me</label
+                          >
+                        </div>
+                      </div> -->
+                    <button class="btn btn-primary btn-user btn-block" type="submit">
+                      Login
+                    </button>
+                    <hr />
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- /javascripit -->
+
+  <script>
+    const form = document.querySelector("form");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = form.email.value;
+      const password = form.password.value;
+
+      // console.log(email, password);
+      // if (email === "") {
+      //   document.getElementById("email").innerHTML =
+      //     " please enter your email";
+      //   setTimeout(() => {
+      //     document.getElementById("email").innerHTML = " ";
+      //   }, 3000);
+      // } else if (password === "") {
+      //   document.getElementById("pass").innerHTML =
+      //     " please enter your password";
+      //   setTimeout(() => {
+      //     document.getElementById("pass").innerHTML = " ";
+      //   }, 3000);
+      // } else
+      // if (password.length < 6) {
+      //   document.getElementById("pass").innerHTML =
+      //     "password must be at least 6 numbers";
+      //   setTimeout(() => {
+      //     document.getElementById("pass").innerHTML = " ";
+      //   }, 3000);
+      // }
+
+      try {
+        const res = fetch("/loginpost", {
+          method: "post",
+          body: JSON.stringify({ email, password }),
+          headers: { "Content-Type": "application/json" },
+        }).then(async (response) => {
+          let data = await response.json();
+          localStorage.setItem("token", data.token);
+          console.log(data);
+          if (data.status === 200) {
+            localStorage.setItem("token", data.token);
+            window.location.href = "/admin";
+            form.reset();
+          } else if (data.status === 409) {
+            document.getElementById("messagetag").innerHTML = data.message;
+
+            setTimeout(() => {
+              document.getElementById("messagetag").innerHTML = " ";
+            }, 3000);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      // const data = await response.json();
+      // console.log("???", data);
+    });
+
+    form.reset();
+  </script>
+
+  <!-- new javascript -->
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin-2.min.js"></script>
+</body>
+
+</html>
+
+<!-- <form action="/process-login-form" method="POST"> -->
